@@ -84,6 +84,10 @@ def count_encode(df: pd.DataFrame, col: str) -> pd.DataFrame:
     return df
 
 
+def cal_time_differnce():
+    pass
+
+
 def split_datetime(df: pd.DataFrame, colname: str) -> pd.DataFrame:
     """_summary_: This function is used to split the datetime column into separate columns.
 

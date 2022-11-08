@@ -45,7 +45,7 @@ categorify_columns:
     "query_feature_3",
     "duration"]
 
-date_columns:
+date_cols:
   [
     "query_date",
     "pickup_date"
