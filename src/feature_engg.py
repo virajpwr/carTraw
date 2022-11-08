@@ -16,6 +16,7 @@ class feat_engg(object):
 
         cal_time_diff(): A function to calculate the time difference between pickup_date and query_date in days
     """
+
     def __init__(self, df, config):
         self.df = df
         self.config = config
@@ -58,11 +59,11 @@ class feat_engg(object):
         return self.df
 
     def cal_time_diff(self):
-        """_summary_: A function to calculate the time difference between two datetime columns.
+        """_summary_: A function to calculate the time difference in days between pickup date and query date  columns.
         parameters:
             None
         returns:
-            df {dataframe}: A dataframe with the time difference columns
+            df {dataframe}: A dataframe with the time_to_pickup column.
 
         """
         # Calculate time difference between two datetime columns.
