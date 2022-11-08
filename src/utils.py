@@ -83,26 +83,6 @@ def count_encode(df: pd.DataFrame, col: str) -> pd.DataFrame:
     df['CE_' + col] = df['CE_' + col].astype('int32')
     return df
 
-
-def calculate_time_difference(df: pd.DataFrame, col1: pd.Series, col2: pd.Series, column_name: str) -> pd.DataFrame:
-    """
-    __summary__: This function is used to calculate the time difference between two timestamps in days.
-
-    parameters:
-        df {pd.DataFrame} -- [dataframe]
-        col1 {pd.Series} -- [first timestamp column]
-        col2 {pd.Series} -- [second timestamp column]
-        column_name {str} -- [name of the new column]
-    returns:
-        df {pd.DataFrame} -- [dataframe with new column]
-    """
-    df[col1] = pd.to_datetime(df[col1], errors='coerce')
-    df[col2] = pd.to_datetime(df[col2], errors='coerce')
-    df[column_name] = df[col1] - df[col2]
-    df[column_name] = df[column_name].dt.days
-    return df
-
-
 def split_datetime(df: pd.DataFrame, colname: str) -> pd.DataFrame:
     """_summary_: This function is used to split the datetime column into separate columns.
 
