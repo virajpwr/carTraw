@@ -1,5 +1,8 @@
 import pandas as pd
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.ensemble import RandomForestClassifier
 import pickle
+import os
 from scipy.stats import boxcox
 import matplotlib.pyplot as plt
 from scipy.stats import shapiro
@@ -24,5 +27,3 @@ from src.preprocessing import *
 from src.feature_selection import *
 from src.train import *
 import json
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.ensemble import RandomForestClassifier

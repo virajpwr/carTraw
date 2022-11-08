@@ -3,12 +3,29 @@ from imports import *
 
 class train_model(object):
 
-    def __init__(self, X_train, y_train, X_test, y_test, config):
-        self.X_train = X_train
-        self.y_train = y_train
-        self.X_test = X_test
-        self.y_test = y_test
+    def __init__(self, df, final_cols, config):
         self.config = config
+        self.df = df
+        self.final_cols = final_cols
+
+    def split_data(self):
+        """
+        __summary__: Split the data into train and test set. Perform SMOTE on training data to handle class imbalance.
+
+        params: self.df{pd.DataFrame}: Dataframe with the data.
+
+        returns: X_train{pd.Series}: 80% of the data for training.
+                 y_train{pd.Series}: 80% of the data for training.
+                 X_test{pd.Series}: 20% of the data for testing.
+                 y_test{pd.Series}: 20% of the data for testing.
+        """
+        # Split the data into train and test set
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
+            self.df[self.final_cols], self.df.target, test_size=0.2, random_state=42)
+        smote = SMOTE(random_state=42)
+        self.X_train, self.y_train = smote.fit_resample(
+            self.X_train, self.y_train)
+        return self.X_train, self.X_test, self.y_train, self.y_test
 
     def base_model(self):
         """
@@ -21,12 +38,9 @@ class train_model(object):
         """
         # Train the base model with default parameters
         logistic_reg = LogisticRegression(
-            solver='sag', max_iter=1000, random_state=42)
+            solver='sag', max_iter=1000, random_state=42)  # use sag solver for large datasets
         logistic_reg.fit(self.X_train, self.y_train)
-        # save the model to disk
 
-        pickle.dump(logistic_reg, open(os.path.join(
-            self.config['PATHS']['Project_path'] + 'models/', self.config['base_model_name_lr']), "wb"), compress=3)
         return logistic_reg
 
     def hyperparameter_tuning_randomforest(self) -> None:
@@ -36,12 +50,14 @@ class train_model(object):
         returns: best_params{dict}: Dictionary of best parameters for random forest model.
 
         """
-        self.logger.info("Hyperparameter tuning for random forest model")
         # hyperparameter tuning for random forest.
         self.rf_model = RandomForestClassifier()
+        scoring = {'f1': 'f1', 'precision': 'precision', 'recall': 'recall'}
+        print('Performing Randomized Search CV for Random Forest')
         self.random_search = RandomizedSearchCV(
-            self.rf_model, self.config["parameter_grid_rf"]["param_grid"], scoring=['f1', 'roc_auc'], cv=5, verbose=2, n_jobs=-1)
-        self.random_search.fit(self.df[self.final_columns],
+            self.rf_model, self.config["parameter_grid_rf"]["param_grid"], scoring=scoring,
+            refit="f1", cv=2, verbose=2, n_jobs=-1, return_train_score=True)
+        self.random_search.fit(self.df[self.final_cols],
                                self.df.target)
         self.best_params = self.random_search.best_params_
 
@@ -60,6 +76,4 @@ class train_model(object):
             **self.best_params, oob_score=True)
         randomforest.set_params(**self.best_params)
         randomforest.fit(self.X_train, self.y_train)
-        joblib.dump(randomforest, open(os.path.join(
-            self.config['PATHS']['Project_path'] + 'models/', self.config['model_name_random_forest']), "wb"), compress=3)  # compress the model to reduce the size of the model
         return randomforest
