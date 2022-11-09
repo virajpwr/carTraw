@@ -40,7 +40,8 @@ class train_model(object):
         logistic_reg = LogisticRegression(
             solver='sag', max_iter=1000, random_state=42)  # use sag solver for large datasets
         logistic_reg.fit(self.X_train, self.y_train)
-
+        dft = pd.DataFrame(self.y_train)
+        print(dft.target.value_counts())
         return logistic_reg
 
     def hyperparameter_tuning_randomforest(self) -> None:
@@ -56,10 +57,11 @@ class train_model(object):
         print('Performing Randomized Search CV for Random Forest')
         self.random_search = RandomizedSearchCV(
             self.rf_model, self.config["parameter_grid_rf"]["param_grid"], scoring=scoring,
-            refit="f1", cv=2, verbose=2, n_jobs=-1, return_train_score=True)
+            refit="f1", cv=5, verbose=2, n_jobs=-1, return_train_score=True)
         self.random_search.fit(self.df[self.final_cols],
                                self.df.target)
         self.best_params = self.random_search.best_params_
+        return self.best_params
 
     def train_random_forest(self) -> object:
         """

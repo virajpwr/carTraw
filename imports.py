@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.metrics import plot_confusion_matrix
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.ensemble import RandomForestClassifier
 import pickle
